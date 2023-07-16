@@ -1,16 +1,16 @@
 from model import Model
+from model import Model
 from sklearn.datasets import load_iris
 from sklearn.datasets import load_wine
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import accuracy_score,f1_score
 
 
-#逻辑回归算法
-class LogisticRegression(Model):
-    
+class GradientBoosting(Model):
+
     #加载数据集
     def load_data(self, dataname):
         if dataname == "iris":
@@ -44,10 +44,10 @@ class LogisticRegression(Model):
             y_test_fold = y[test_index]
 
             # 训练
-            lgf = self.train_data(x_train_fold,y_train_fold)
+            gbrt = self.train_data(x_train_fold,y_train_fold)
 
             #评估
-            self.Evaluations(lgf, x_test_fold, y_test_fold, ObservationIndex)
+            self.Evaluations(gbrt, x_test_fold, y_test_fold, ObservationIndex)
     
     #random
     def split_data_Random(self, data, size, ObservationIndex):
@@ -57,47 +57,42 @@ class LogisticRegression(Model):
         x_train, x_test, y_train, y_test = train_test_split(X_scaled, y, test_size=size, random_state=3)
         
         #训练
-        lgf=self.train_data(x_train, y_train)
+        gbrt=self.train_data(x_train, y_train)
         
         #评估
-        self.Evaluations(lgf, x_test, y_test, ObservationIndex)
+        self.Evaluations(gbrt, x_test, y_test, ObservationIndex)
     
     #训练模型
     def train_data(self, X_train, y_train):
-        lg = LogisticRegression(max_iter=10000)
-        lgf = lg.fit(X_train,y_train)
-        return lgf
+        gbrt = GradientBoostingRegressor(max_depth=2, n_estimators=3, random_state=42)
+        gbrtf = gbrt.fit(X_train,y_train)
+        return gbrtf
 
     #评估模型
     def Evaluations(self, model, x_test, y_test, ObservationIndex):
         y_pred = model.predict(x_test)
+        #数据转int
+        predictions = [round(value) for value in y_pred]
         if ObservationIndex == "acc":
-            AccuracyScore = accuracy_score(y_test,y_pred)
+            AccuracyScore = accuracy_score(y_test,predictions)
             print('accuracy_score : ', AccuracyScore)
         elif ObservationIndex == "f1":
-            F1Score = f1_score(y_test,y_pred, average='micro')
+            F1Score = f1_score(y_test,predictions, average='micro')
             print('f1_score for micro : ', F1Score)
 
     #测试模型
     def test(self, dataname, method, size, ObservationIndex):
-        print("LogisticRegression test:\n")
+        print("GradientBoosting test:")
         
         if method == "kfold":
-            if ObservationIndex == "acc":
-                self.split_data_K_Fold(dataname, ObservationIndex)
-            elif ObservationIndex == "f1":
-                self.split_data_K_Fold(dataname, ObservationIndex)
+            self.split_data_K_Fold(dataname, ObservationIndex)
         
         elif method == "random":
-            if ObservationIndex == "acc":
-                self.split_data_Random(dataname, size, ObservationIndex)
-            elif ObservationIndex == "f1":
-                self.split_data_Random(dataname, size, ObservationIndex)
-   
+            self.split_data_Random(dataname, size, ObservationIndex)
 
 if __name__ == '__main__':
     # 1. 创建一个算法模型对象
-    a = LogisticRegression()
+    a = GradientBoosting()
     # 2. 调用模型对象的方法
-    a.test("iris", "kfold", 0.5, "f1")
-    a.test("wine", "random", 0.7, "f1")
+    a.test("iris", "kfold", 0.5, "acc")
+    a.test("iris", "random", 0.9, "acc")

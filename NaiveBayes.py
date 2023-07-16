@@ -63,8 +63,8 @@ class NaiveBayes(Model):
     
     #训练模型
     def train_data(self, X_train, y_train):
-        clf = GaussianNB()
-        clf.fit(X_train,y_train)
+        cl = GaussianNB()
+        clf = cl.fit(X_train,y_train)
         return clf
 
     #评估模型
@@ -82,16 +82,10 @@ class NaiveBayes(Model):
         print("NaiveBayes test:")
         
         if method == "kfold":
-            if ObservationIndex == "acc":
-                self.split_data_K_Fold(dataname, ObservationIndex)
-            elif ObservationIndex == "f1":
-                self.split_data_K_Fold(dataname, ObservationIndex)
+            self.split_data_K_Fold(dataname, ObservationIndex)
         
         elif method == "random":
-            if ObservationIndex == "acc":
-                self.split_data_Random(dataname, size, ObservationIndex)
-            elif ObservationIndex == "f1":
-                self.split_data_Random(dataname, size, ObservationIndex)
+            self.split_data_Random(dataname, size, ObservationIndex)
    
 
 if __name__ == '__main__':
