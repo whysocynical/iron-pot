@@ -1,6 +1,10 @@
+from sklearn import svm
 import random
 from sklearn.datasets import load_wine  # wine数据集
 from sklearn.datasets import load_iris  # iris数据集
+from sklearn.metrics import  classification_report,precision_recall_curve
+from sklearn.model_selection import train_test_split  # 数据集划分
+from sklearn.preprocessing import StandardScaler  # 标准差标准化
 import numpy as np
 import matplotlib.pyplot as plt
 from model import Model
